@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
+    'base',
     'accounts',
+    'products',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +127,40 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = "accounts.User"
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+DJOSER = {
+    'USER_ID_FIELD': 'uid',
+    'LOGIN_FIELD': 'email',
+
+    # Password Reset
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
+
+    # Activation
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+
+    # Emails
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,
+    'SEND_ACTIVATION_EMAIL': False,
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': False,
+
+    # Password Retype
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SET_USERNAME_RETYPE': True,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': True,
+
+}
