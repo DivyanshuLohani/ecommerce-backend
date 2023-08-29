@@ -1,17 +1,9 @@
 from django.db import models
-
-# Create your models here.
 import random
-from typing import Iterable, Optional
 from django.utils.text import slugify
 from django.db import models
-from PIL import Image
-from io import BytesIO
-from django.core.files import File
 from accounts.models import Vendor
-from shortuuidfield import ShortUUIDField
 from base.models import BaseModel
-import os
 
 
 def product_upload(instance, filename):
@@ -134,6 +126,9 @@ class ProductImage(BaseModel):
         related_name="images",
         on_delete=models.CASCADE,
     )
+
+    def __str__(self) -> str:
+        return self.image.url
 
 # TODO: add Featured Product
 # class FeaturedProduct(BaseModel):
