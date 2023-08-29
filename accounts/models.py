@@ -1,3 +1,4 @@
+from typing import Any, Optional
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from shortuuidfield import ShortUUIDField
@@ -28,11 +29,15 @@ class NewUserManager(UserManager):
         user = self.model(
             email=email,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            username=email
         )
         user.set_password(password)
         user.save(using=self.db)
         return user
+
+    def create_superuser(self, email, password, **extra_fields):
+        return super().create_superuser(email, email, password, **extra_fields)
 
 
 class User(AbstractUser, BaseModel):
