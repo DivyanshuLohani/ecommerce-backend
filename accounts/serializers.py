@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Vendor
+from .models import Vendor, Address
 
 
 class VendorSerializer(ModelSerializer):
@@ -11,3 +11,11 @@ class VendorSerializer(ModelSerializer):
         extra_kwargs = {
             'user': {'write_only': True}
         }
+
+
+class AddressSerializer(ModelSerializer):
+
+    class Meta:
+        model = Address
+        exclude = ["id", "user"]
+        read_only_fields = []
