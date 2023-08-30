@@ -82,7 +82,7 @@ class Address(BaseModel):
 def vendor_upload(instance, filename):
     ext = filename.split(".")[-1]
 
-    return f"media/users/{instance.user.id}/{hash(instance.id)}.{ext}"
+    return f"media/users/{instance.user.uid}/{hash(instance.uid)}.{ext}"
 
 
 class Vendor(BaseModel):
