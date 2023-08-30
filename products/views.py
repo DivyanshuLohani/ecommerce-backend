@@ -8,11 +8,13 @@ from .serializers import ProductSerializer
 
 
 class ProductView(GenericAPIView, RetrieveModelMixin):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'uid'
 
-    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        uid = self.kwargs[self.lookup_field]
+        product = Product.objects.filter(uid=uid, status="publish")
+        return product
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -30,7 +32,8 @@ class CategoryView(ListAPIView, RetrieveModelMixin):
 
     def get_queryset(self):
         slug = self.kwargs[self.lookup_field]
-        products = Product.objects.filter(category__slug=slug)
+        products = Product.objects.filter(
+            category__slug=slug, status="publish")
         return products
 
 
@@ -52,4 +55,4 @@ class ProductSearch(ListAPIView, RetrieveModelMixin):
             query_dict['price__lte'] = mx_price
             query_dict['price__gte'] = mi_price
 
-        return Product.objects.filter(**query_dict)
+        return Product.objects.filter(**query_dict, status="publish")
