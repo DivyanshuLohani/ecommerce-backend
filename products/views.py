@@ -3,13 +3,14 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
 from .models import Product, Category
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from .serializers import ProductSerializer
 
 
 class ProductView(GenericAPIView, RetrieveModelMixin):
     serializer_class = ProductSerializer
     lookup_field = 'uid'
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         uid = self.kwargs[self.lookup_field]
@@ -20,11 +21,9 @@ class ProductView(GenericAPIView, RetrieveModelMixin):
         return self.retrieve(request, *args, **kwargs)
 
 
-class ProductCreateView(GenericAPIView, CreateModelMixin):
-    serializer_class = ProductSerializer
-
-
 class CategoryView(ListAPIView, RetrieveModelMixin):
+
+    permission_classes = [AllowAny]
 
     serializer_class = ProductSerializer
     lookup_url_kwarg = None
@@ -40,6 +39,8 @@ class CategoryView(ListAPIView, RetrieveModelMixin):
 class ProductSearch(ListAPIView, RetrieveModelMixin):
     paginate_by = 20
     serializer_class = ProductSerializer
+
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         search = self.kwargs['search']

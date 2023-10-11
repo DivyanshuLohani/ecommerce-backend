@@ -1,7 +1,6 @@
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from .serializers import VendorSerializer, AddressSerializer
 from .models import Address
 # Create your views here.
@@ -10,7 +9,6 @@ from .models import Address
 class CreateVendorView(CreateAPIView):
 
     serializer_class = VendorSerializer
-    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         if request.user.vendor.first():
@@ -26,7 +24,7 @@ class CreateVendorView(CreateAPIView):
 
 
 class AddressView(CreateAPIView, ListAPIView):
-    permission_classes = [IsAuthenticated]
+
     serializer_class = AddressSerializer
 
     def get_queryset(self):
@@ -43,7 +41,6 @@ class AddressView(CreateAPIView, ListAPIView):
 
 class AddressUpdate(RetrieveUpdateDestroyAPIView):
 
-    permission_classes = [IsAuthenticated]
     serializer_class = AddressSerializer
     lookup_field = "uid"
     lookup_url_kwarg = "uid"

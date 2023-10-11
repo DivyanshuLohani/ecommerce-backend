@@ -8,7 +8,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    uid = ShortUUIDField(max_length=14, auto=True)
+    uid = ShortUUIDField(max_length=14, auto=True, primary_key=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

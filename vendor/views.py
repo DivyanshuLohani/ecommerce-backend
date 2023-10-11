@@ -49,7 +49,7 @@ class ProductsView(ListAPIView, RetrieveModelMixin):
 
     def get_queryset(self):
         products = Product.objects.filter(
-            vendor=self.request.vendor.first()
+            vendor=self.request.user.vendor.first()
         )
         return products
 

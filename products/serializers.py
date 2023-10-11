@@ -7,19 +7,19 @@ class VendorSnippetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vendor
-        exclude = ["id", "user", "contact", "address"]
+        exclude = ["user", "contact", "address"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        exclude = ["id", "parent"]
+        exclude = ["parent"]
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        exclude = ['id', 'product']
+        exclude = ['product']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -30,19 +30,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        # fields = (
-        #     "uid",
-        #     "name",
-        #     "description",
-        #     "price",
-        #     "og_price",
-        #     "image",
-        #     "status",
-        #     "in_stock",
-        #     "digital",
-        # )
-        # fields = "__all__"
-        exclude = ["id"]
+
+        fields = "__all__"
 
     def validate_category(self, value):
         if isinstance(value, str):
