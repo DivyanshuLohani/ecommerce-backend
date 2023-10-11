@@ -58,6 +58,10 @@ class User(AbstractUser, BaseModel):
 
 
 class Address(BaseModel):
+
+    class Meta:
+        verbose_name_plural = "Addresses"
+
     uid = ShortUUIDField(max_length=14, auto=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="addresses")
