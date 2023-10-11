@@ -46,7 +46,7 @@ class AddressUpdate(RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = "uid"
 
     def get_queryset(self):
-        uid = self.kwargs['uid']
+        uid = self.kwargs[self.lookup_field]
         return Address.objects.filter(user=self.request.user, uid=uid)
 
     def get(self, request, *args, **kwargs):
