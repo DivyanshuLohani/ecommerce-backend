@@ -1,10 +1,14 @@
-from rest_framework.generics import CreateAPIView, DestroyAPIView, get_object_or_404
+from rest_framework.generics import (
+    CreateAPIView, DestroyAPIView,
+    get_object_or_404,
+    ListAPIView, RetrieveAPIView
+)
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from .models import CartItem, Product, Order, Address, OrderItem
-from .serializers import CartItemSerializer, OrderSerializer, OrderConfrimSerializer
+from .serializers import CartItemSerializer, OrderSerializer, OrderObjectSerializer
 
 # Create your views here.
 
@@ -58,7 +62,7 @@ class Checkout(APIView):
             cart_items.delete()
 
             # Order Created sussfully send return response
-            order_serializer = OrderConfrimSerializer(order)
+            order_serializer = OrderObjectSerializer(order)
             return Response(order_serializer.data, HTTP_201_CREATED)
 
             # TODO: send email to user reguarding the order status
@@ -78,3 +82,15 @@ class CartDelete(DestroyAPIView):
             CartItem, user=self.request.user,
             product__uid=product_uid
         )
+
+
+class AccountOrders(ListAPIView):
+
+    serializer_class = OrderObjectSerializer
+
+    def get_queryset(self):
+        order_id = self.kwargs.get("uid")
+        if order_id:
+            return Order.objects.filter(user=self.request.user, uid=order_id)
+
+        return Order.objects.filter(user=self.request.user)

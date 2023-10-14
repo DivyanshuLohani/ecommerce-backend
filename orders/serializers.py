@@ -3,6 +3,7 @@ from products.models import Product
 from products.serializers import ProductSerializer
 from .models import CartItem, Order
 from accounts.models import Address
+from accounts.serializers import AddressSerializer
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -27,12 +28,13 @@ class OrderSerializer(serializers.Serializer):
     payment_method = serializers.CharField()
 
 
-class OrderConfrimSerializer(serializers.ModelSerializer):
+class OrderObjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        exclude = ['address', 'user', ]
+        exclude = ['user']
 
+    address = AddressSerializer()
     items = serializers.SerializerMethodField()
     subtotal = serializers.SerializerMethodField()
     og_subtotal = serializers.SerializerMethodField()

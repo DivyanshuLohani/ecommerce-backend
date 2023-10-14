@@ -16,5 +16,5 @@ class AddressSerializer(ModelSerializer):
 
     class Meta:
         model = Address
-        exclude = ["user"]
+        exclude = ["id", "user"]
         read_only_fields = []
