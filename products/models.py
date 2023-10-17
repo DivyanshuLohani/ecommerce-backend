@@ -2,8 +2,9 @@ from django.db import models
 import random
 from django.utils.text import slugify
 from django.db import models
-from accounts.models import Vendor
+from accounts.models import Vendor, User
 from base.models import BaseModel
+from django.core.validators import MaxValueValidator
 
 
 def product_upload(instance, filename):
@@ -36,7 +37,11 @@ PRODUCT_STATUS_CHOICES = (
 class Category(BaseModel):
     name = models.CharField(max_length=255)
     parent = models.ForeignKey(
-        "Category", on_delete=models.CASCADE, blank=True, default=None, null=True
+        "Category",
+        on_delete=models.CASCADE,
+        blank=True,
+        default=None,
+        null=True
     )
     slug = models.SlugField(blank=True, unique=True)
     description = models.CharField(max_length=1024, default="")
@@ -129,6 +134,22 @@ class ProductImage(BaseModel):
 
     def __str__(self) -> str:
         return self.image.url
+
+
+class ProductReview(BaseModel):
+    title = models.CharField(max_length=256)
+    content = models.CharField(max_length=2048)
+    user = models.ForeignKey(User, models.CASCADE, related_name="reviews")
+    product = models.ForeignKey(
+        Product,
+        models.CASCADE,
+        related_name="reviews"
+    )
+    rating = models.PositiveIntegerField(
+        validators=[MaxValueValidator(10)],
+        error_messages=["The rating should be between 1 and 10"]
+    )
+
 
 # TODO: add Featured Product
 # class FeaturedProduct(BaseModel):

@@ -1,5 +1,12 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Vendor, Address
+from .models import Vendor, Address, User
+
+
+class UserProfileSerializer(ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
 
 
 class VendorSerializer(ModelSerializer):

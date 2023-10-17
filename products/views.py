@@ -1,10 +1,15 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.generics import ListAPIView, GenericAPIView
-from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
-from .models import Product, Category
+from rest_framework.generics import (
+    ListAPIView,
+    GenericAPIView,
+    RetrieveUpdateDestroyAPIView,
+    CreateAPIView,
+    get_object_or_404
+)
+from rest_framework.exceptions import ParseError
+from rest_framework.mixins import RetrieveModelMixin
+from .models import Product, Category, ProductReview
 from rest_framework.permissions import AllowAny
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, ProductReviewSerializer
 
 
 class ProductView(GenericAPIView, RetrieveModelMixin):
@@ -57,3 +62,32 @@ class ProductSearch(ListAPIView, RetrieveModelMixin):
             query_dict['price__gte'] = mi_price
 
         return Product.objects.filter(**query_dict, status="publish")
+
+
+class ReviewCreateView(CreateAPIView):
+    serializer_class = ProductReviewSerializer
+
+    def perform_create(self, serializer):
+        product = Product.objects.filter(uid=self.kwargs['uid']).first()
+        if not product:
+            raise ParseError("Bad product ID")
+
+        serializer.save(product=product, user=self.request.user)
+
+
+class ReviewSeeView(ListAPIView, RetrieveModelMixin):
+    serializer_class = ProductReviewSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return ProductReview.objects.filter(product__uid=self.kwargs['uid'])
+
+
+class ReviewAddDeleteUpdateView(RetrieveUpdateDestroyAPIView):
+    serializer_class = ProductReviewSerializer
+    lookup_field = "uid"
+    lookup_url_kwarg = "r_uid"
+    queryset = ProductReview.objects.all()
+
+    def check_object_permissions(self, request, obj):
+        return request.user == obj.user

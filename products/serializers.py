@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from accounts.serializers import VendorSerializer, Vendor
-from .models import Category, Product, ProductImage
+from accounts.serializers import Vendor, UserProfileSerializer
+from .models import Category, Product, ProductImage, ProductReview
 
 
 class VendorSnippetSerializer(serializers.ModelSerializer):
@@ -37,6 +37,15 @@ class ProductSerializer(serializers.ModelSerializer):
         if isinstance(value, str):
             c = Category.objects.filter(slug=value).exists()
             if not c:
-                raise serializers.ValidationError("Category is invalid")
+                raise serializers.ValidationError("Category doesn't exist")
             return value
         raise serializers.ValidationError("Category is invalid")
+
+
+class ProductReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductReview
+        exclude = ['product']
+
+    user = UserProfileSerializer()
