@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from .models import CartItem, Product, Order, Address, OrderItem
 from .serializers import CartItemSerializer, OrderSerializer, OrderObjectSerializer
+from products.serializers import ProductSerializer
 
 # Create your views here.
 
@@ -33,6 +34,16 @@ class CartView(CreateAPIView):
             return cart_obj.save()
         else:
             return serializer.save(user=self.request.user, product=proudct)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        items = CartItem.objects.filter(user=self.request.user).all()
+        serializer = ProductSerializer([i.product for i in items], many=True)
+        return Response(serializer.data, status=201, headers=headers)
 
 
 class Checkout(APIView):
