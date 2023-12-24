@@ -4,6 +4,29 @@ from products.serializers import ProductSerializer
 from .models import CartItem, Order
 from accounts.models import Address
 from accounts.serializers import AddressSerializer
+from django.conf import settings
+
+
+def razorpay_oid(instance):
+    return {
+        "key": settings.RZP_ID,
+        "amount": f"{instance.total * 100}",
+        "currency": "INR",
+        "name": settings.SITE_NAME,
+        "description": f"Your order on {settings.SITE_NAME}",
+        "image": "https://example.com/your_logo",
+        "order_id": f"{instance.payment_order_id}",
+        # "callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+        "prefill": {
+            "name": instance.user.get_full_name(),
+            "email": instance.user.email,
+            # "contact": "9000090000"
+        },
+
+        "theme": {
+            "color": "#3399cc"
+        }
+    }
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -28,6 +51,12 @@ class OrderSerializer(serializers.Serializer):
     payment_method = serializers.CharField()
 
 
+class PaymentVerifySerializer(serializers.Serializer):
+
+    payment_id = serializers.CharField()
+    payment_signature = serializers.CharField()
+
+
 class OrderObjectSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -40,6 +69,8 @@ class OrderObjectSerializer(serializers.ModelSerializer):
     og_subtotal = serializers.SerializerMethodField()
     discount = serializers.SerializerMethodField()
 
+    payment_info = serializers.SerializerMethodField()
+
     def get_subtotal(self, instance):
         return instance.total
 
@@ -51,3 +82,8 @@ class OrderObjectSerializer(serializers.ModelSerializer):
 
     def get_items(self, instance):
         return ProductSerializer([i.product for i in instance.items.all()], many=True).data
+
+    def get_payment_info(self, instance: Order):
+        if instance.payment_order_id is None:
+            return None
+        return razorpay_oid(instance)

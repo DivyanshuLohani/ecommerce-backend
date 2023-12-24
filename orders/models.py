@@ -5,6 +5,7 @@ from accounts.models import User, Address
 
 ORDER_STATUS_CHOICES = (
     ("process", "Processing"),
+    ("confirm", "Confrimed"),
     ("ship", "Shipped"),
     ("diliver", "Delivered")
 )
@@ -22,6 +23,12 @@ class Order(BaseModel):
         choices=ORDER_STATUS_CHOICES,
         default=ORDER_STATUS_CHOICES[0][0],
         max_length=15
+    )
+
+    payment_order_id = models.CharField(
+        default=None,
+        null=True,
+        max_length=512
     )
 
     payment_method = models.CharField(

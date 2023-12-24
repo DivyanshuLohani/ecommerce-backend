@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+import razorpay
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -54,11 +55,15 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'server.urls'
 
@@ -167,13 +172,17 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "uid",
 }
 
+DOMAIN = 'localhost:3000'
+SITE_NAME = 'Frontend'
+
 DJOSER = {
     'USER_ID_FIELD': 'uid',
     'LOGIN_FIELD': 'email',
 
     # Password Reset
-    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'account/password/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
 
     # Activation
     'ACTIVATION_URL': 'activate/{uid}/{token}',
@@ -190,3 +199,6 @@ DJOSER = {
     'LOGOUT_ON_PASSWORD_CHANGE': True,
 
 }
+RZP_ID = os.environ['RAZORPAY_ID']
+RZP_SECRET = os.environ['RAZORPAY_SECRET']
+RZP_CLIENT = razorpay.Client(auth=(RZP_ID, RZP_SECRET))

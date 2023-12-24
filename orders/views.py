@@ -1,17 +1,35 @@
 from rest_framework.generics import (
     CreateAPIView, DestroyAPIView,
     get_object_or_404,
-    ListAPIView, RetrieveAPIView
+    ListAPIView
 )
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from .models import CartItem, Product, Order, Address, OrderItem
-from .serializers import CartItemSerializer, OrderSerializer, OrderObjectSerializer
+from .serializers import CartItemSerializer, OrderSerializer, OrderObjectSerializer, PaymentVerifySerializer
 from products.serializers import ProductSerializer
+from django.conf import settings
 
 # Create your views here.
+
+
+class GetCartView(ListAPIView):
+
+    def get_queryset(self):
+        return CartItem.objects.filter(user=self.request.user).all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class CartView(CreateAPIView):
@@ -73,11 +91,26 @@ class Checkout(APIView):
             cart_items.delete()
 
             # Order Created sussfully send return response
-            order_serializer = OrderObjectSerializer(order)
-            return Response(order_serializer.data, HTTP_201_CREATED)
 
             # TODO: send email to user reguarding the order status
-            # TODO: add system for payment integration
+
+            if serializer.validated_data['payment_method'] == "rzp":
+                rzp_data = {
+                    "amount": float(order.total) * 100,
+                    "currency": "INR",
+                    # "receipt": "receipt#1",
+                    # "notes": {
+                    #     "key1": "value3",
+                    #     "key2": "value2"
+                    # }
+                }
+                # TODO: ADD ERROR HANDLING
+                resp = settings.RZP_CLIENT.order.create(data=rzp_data)
+                order.payment_order_id = resp['id']
+                order.save()
+
+            order_serializer = OrderObjectSerializer(order)
+            return Response(order_serializer.data, HTTP_201_CREATED)
 
         else:
             raise ParseError(serializer.errors)
@@ -105,3 +138,24 @@ class AccountOrders(ListAPIView):
             return Order.objects.filter(user=self.request.user, uid=order_id)
 
         return Order.objects.filter(user=self.request.user)
+
+
+class OrderPaymentVerify(APIView):
+
+    def post(self, request, uid):
+        serializer = PaymentVerifySerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            order = get_object_or_404(Order, uid=uid)
+            signature = settings.RZP_CLIENT.utility.verify_payment_signature({
+                'razorpay_order_id': order.payment_order_id,
+                'razorpay_payment_id': serializer.validated_data['payment_id'],
+                'razorpay_signature': serializer.validated_data['payment_signature']
+            })
+            if signature:
+                order.status = "confirm"
+                order.save()
+                return Response({"message": "Success"})
+            else:
+                raise ParseError("Signature doesn't match")
+
+        raise ParseError(serializer.errors)
