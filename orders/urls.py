@@ -7,7 +7,7 @@ urlpatterns = [
     path('cart/<str:uid>/delete/', CartDelete.as_view(), name="cart_delete"),
     path('checkout/', Checkout.as_view(), name="checkout"),
     path('orders/', AccountOrders.as_view(), name="orders"),
-    path('orders/<str:uid>/', AccountOrders.as_view(), name="order_item"),
-    path('orders/<str:uid>/verify_payment/',
+    path('<str:uid>/', AccountOrders.as_view(), name="order_item"),
+    path('<str:uid>/verify_payment/',
          OrderPaymentVerify.as_view(), name="payment_verify"),
 ]

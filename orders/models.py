@@ -5,6 +5,7 @@ from accounts.models import User, Address
 
 ORDER_STATUS_CHOICES = (
     ("process", "Processing"),
+    ("payment_pending", "Payment Pending"),
     ("confirm", "Confrimed"),
     ("ship", "Shipped"),
     ("diliver", "Delivered")
@@ -13,7 +14,7 @@ ORDER_STATUS_CHOICES = (
 PAYMENT_CHOICES = (
     ("cod", "Pay On Delivery"),
     ("paypal", "Paypal"),
-    ("razorpay", "Razor Pay")
+    ("rzp", "Razor Pay")
 )
 
 

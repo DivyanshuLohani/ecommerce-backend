@@ -77,8 +77,9 @@ class Checkout(APIView):
             ).first()
             if not address or (address and (address.user != self.request.user)):
                 raise NotFound("Address doesn't exist")
-
-            order = Order(user=request.user, address=address)
+            payment_method = serializer.validated_data['payment_method']
+            order = Order(user=request.user, address=address,
+                          payment_method=payment_method)
             order.save()
             order_items = [
                 OrderItem(
@@ -94,7 +95,7 @@ class Checkout(APIView):
 
             # TODO: send email to user reguarding the order status
 
-            if serializer.validated_data['payment_method'] == "rzp":
+            if payment_method == "rzp":
                 rzp_data = {
                     "amount": float(order.total) * 100,
                     "currency": "INR",
@@ -107,6 +108,7 @@ class Checkout(APIView):
                 # TODO: ADD ERROR HANDLING
                 resp = settings.RZP_CLIENT.order.create(data=rzp_data)
                 order.payment_order_id = resp['id']
+                order.status = "payment_pending"
                 order.save()
 
             order_serializer = OrderObjectSerializer(order)
