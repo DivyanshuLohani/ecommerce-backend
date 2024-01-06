@@ -8,7 +8,7 @@ from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from .models import CartItem, Product, Order, Address, OrderItem
-from .serializers import CartItemSerializer, OrderSerializer, OrderObjectSerializer, PaymentVerifySerializer
+from .serializers import CartItemSerializer, OrderSerializer, OrderObjectSerializer, PaymentVerifySerializer, CartItemViewSerializer
 from products.serializers import ProductSerializer
 from django.conf import settings
 
@@ -17,16 +17,18 @@ from django.conf import settings
 
 class GetCartView(ListAPIView):
 
+    serializer_class = CartItemViewSerializer
+
     def get_queryset(self):
         return CartItem.objects.filter(user=self.request.user).all()
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -43,12 +45,16 @@ class CartView(CreateAPIView):
         proudct = Product.objects.filter(
             uid=serializer.validated_data.get("product")
         ).first()
+        quantity = serializer.validated_data.get("quantity")
+        # Delete Item
+
         cart_obj = CartItem.objects.filter(
             product=proudct,
             user=self.request.user
         ).first()
+
         if cart_obj:
-            cart_obj.quantity = serializer.validated_data.get("quantity")
+            cart_obj.quantity = quantity
             return cart_obj.save()
         else:
             return serializer.save(user=self.request.user, product=proudct)
@@ -60,7 +66,7 @@ class CartView(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
 
         items = CartItem.objects.filter(user=self.request.user).all()
-        serializer = ProductSerializer([i.product for i in items], many=True)
+        serializer = CartItemViewSerializer(items, many=True)
         return Response(serializer.data, status=201, headers=headers)
 
 

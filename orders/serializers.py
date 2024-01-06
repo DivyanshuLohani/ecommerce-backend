@@ -45,6 +45,18 @@ class CartItemSerializer(serializers.ModelSerializer):
         return value
 
 
+class CartItemViewSerializer(serializers.ModelSerializer):
+    """
+        View only serialzier this should only be used only to provide data to the user
+        Not to write new items to the cart
+    """
+    class Meta:
+        model = CartItem
+        fields = ['product', 'quantity']
+
+    product = ProductSerializer()
+
+
 class OrderSerializer(serializers.Serializer):
 
     address = serializers.CharField()
