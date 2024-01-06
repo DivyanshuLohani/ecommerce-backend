@@ -51,15 +51,15 @@ class Order(BaseModel):
 
     @property
     def total(self):
-        return sum([x.product.price for x in self.items.all()])
+        return sum([x.product.price * x.quantity for x in self.items.all()])
 
     @property
     def og_total(self):
-        return sum([x.product.og_price for x in self.items.all()])
+        return sum([x.product.og_price * x.quantity for x in self.items.all()])
 
     @property
     def discount(self):
-        return sum([x.product.discount for x in self.items.all()])
+        return sum([x.product.discount * x.quantity for x in self.items.all()])
 
 
 class OrderItem(BaseModel):
