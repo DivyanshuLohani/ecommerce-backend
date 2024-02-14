@@ -213,3 +213,8 @@ SOCIAL_AUTH_ALLOWED_REDIRECT_URIS = [
 GOOGLE_AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
 GOOGLE_OAUTH2_SCOPE = "email"
+
+FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID']
+FACEBOOK_APP_SECRET = os.environ['FACEBOOK_APP_SECRET']
+FACEBOOK_AUTHORIZATION_BASE_URL = "https://www.facebook.com/v19.0/dialog/oauth"
+FACEBOOK_TOKEN_URL = "https://graph.facebook.com/v19.0/oauth/access_token"
