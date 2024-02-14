@@ -202,3 +202,14 @@ DJOSER = {
 RZP_ID = os.environ['RAZORPAY_ID']
 RZP_SECRET = os.environ['RAZORPAY_SECRET']
 RZP_CLIENT = razorpay.Client(auth=(RZP_ID, RZP_SECRET))
+
+GOOGLE_CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']
+GOOGLE_CLIENT_SECRET = os.environ['GOOGLE_CLIENT_SECRET']
+SOCIAL_AUTH_ALLOWED_REDIRECT_URIS = [
+    "http://127.0.0.1:8000/login/",
+    "http://127.0.0.1:3000/login/",
+    "http://localhost:3000/login/"
+]
+GOOGLE_AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
+GOOGLE_OAUTH2_SCOPE = "email"
