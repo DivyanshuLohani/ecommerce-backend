@@ -15,6 +15,10 @@ def product_image(instance, filename):
     return f"media/{instance.product.category.uid}/{instance.product.uid}/{filename}"
 
 
+def banner_image(instance, filename):
+    return f"media/{instance.uid}/{filename}"
+
+
 def category_image(x, y): return f"media/{x.uid}/{y}"
 
 
@@ -151,7 +155,11 @@ class ProductReview(BaseModel):
     )
 
 
-# TODO: add Featured Product
-# class FeaturedProduct(BaseModel):
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     image = models.ImageField("Featured Image", upload_to=product_image)
+class Banner(BaseModel):
+    title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to=banner_image)
+    url = models.URLField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title

@@ -7,9 +7,9 @@ from rest_framework.generics import (
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.mixins import RetrieveModelMixin
-from .models import Product, Category, ProductReview
+from .models import Banner, Product, Category, ProductReview
 from rest_framework.permissions import AllowAny
-from .serializers import ProductSerializer, ProductReviewSerializer
+from .serializers import BannerSerializer, CategorySerializer, ProductSerializer, ProductReviewSerializer
 
 
 class ProductView(GenericAPIView, RetrieveModelMixin):
@@ -91,3 +91,15 @@ class ReviewAddDeleteUpdateView(RetrieveUpdateDestroyAPIView):
 
     def check_object_permissions(self, request, obj):
         return request.user == obj.user
+
+
+class BannerListView(ListAPIView, CreateAPIView):
+    queryset = Banner.objects.filter(is_active=True)
+    serializer_class = BannerSerializer
+    permission_classes = [AllowAny]
+
+
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny]

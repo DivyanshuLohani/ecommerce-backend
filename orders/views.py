@@ -143,7 +143,7 @@ class AccountOrders(ListAPIView):
     def get_queryset(self):
         order_id = self.kwargs.get("uid")
         if order_id:
-            return Order.objects.filter(user=self.request.user, uid=order_id)
+            return Order.objects.filter(user=self.request.user, uid=order_id, status="confirm")
 
         return Order.objects.filter(user=self.request.user)
 

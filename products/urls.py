@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import ProductView, CategoryView, ProductSearch, ReviewCreateView, ReviewAddDeleteUpdateView, ReviewSeeView
+from .views import BannerListView, ProductView, CategoryView, ProductSearch, ReviewCreateView, ReviewAddDeleteUpdateView, ReviewSeeView, CategoryListView
 from django.views import View
 from rest_framework.response import Response
 
 
 urlpatterns = [
+    path('banners/', BannerListView.as_view(), name='banner-list'),
+    path('categories/', CategoryListView.as_view()),
     path('<str:uid>/', ProductView.as_view()),
     path('<str:uid>/reviews/', ReviewCreateView.as_view()),
     path('<str:uid>/reviews/get/', ReviewSeeView.as_view()),

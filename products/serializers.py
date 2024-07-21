@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from accounts.serializers import Vendor, UserProfileSerializer
-from .models import Category, Product, ProductImage, ProductReview
+from .models import Banner, Category, Product, ProductImage, ProductReview
 
 
 class VendorSnippetSerializer(serializers.ModelSerializer):
@@ -49,3 +49,9 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         exclude = ['product']
 
     user = UserProfileSerializer()
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = "__all__"
